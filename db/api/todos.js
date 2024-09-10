@@ -1,46 +1,64 @@
 const express = require('express');
-const fs = require('fs');
 const todos = express.Router();
+const { MongoClient } = require('mongodb');
 
-let data = fs.readFileSync('./db/data.json');
-let dataParse = JSON.parse(data);
+const dbName = 'todos';
+const url = 'mongodb+srv://bluii0157:rhfkslfjqj@cluster0.lx7ow.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const client = new MongoClient(url);
 
-todos.get('/', function (req, res){
-   res.send( dataParse )
-})
-todos.get('/:id', function (req, res){
-   let {id} = req.params;
-   let d = dataParse.list.filter((obj)=>obj.id == id);
+async function connect(){
+   await client.connect();
+   const db = client.db(dbName);
 
-   res.send(d)
-})
+   return db.collection('data');
+}
 
-todos.post('/', function (req, res){
-   let body = [...dataParse.list, req.body];
-   fs.writeFileSync('./db/data.json', JSON.stringify({list:body}))
-   res.send({list:body})
-})
 
-todos.put('/', function (req, res){
-   let {id,status} = req.body;
-   let body = [...dataParse.list].map(obj=>{
-      if(obj.id == id){
-         obj.status = status;
-      }
-      return obj;
-   })
-   
-   fs.writeFileSync('./db/data.json', JSON.stringify({list:body}))
-   res.send({list:body})
+todos.get('/', async function (req, res){
+   const collection = await connect();
+   const findResult = await collection.find({}).toArray();
+   client.close(); 
+   // 얘만 쓰면 에러
+
+   res.send( findResult )
 })
 
 
-todos.delete('/', function (req, res){
-   let {id} = req.query;
-   let body = [...dataParse.list].filter(obj=>obj.id != id);
-   
-   fs.writeFileSync('./db/data.json', JSON.stringify({list:body}))
-   res.send({list:body})
+todos.get('/:id', async function (req, res){
+   let id = req.params;
+
+   const collection = await connect();
+   const findResult = await collection.find(id).toArray();
+   client.close();
+
+   res.send( findResult )
+})
+
+todos.post('/', async function (req, res){
+   const collection = await connect();   
+                     await collection.insertOne(req.body);
+   // const findResult = await collection.find({}).toArray();
+   client.close();
+   res.send('done')
+})
+
+todos.put('/', async function (req, res){
+   const collection = await connect();   
+                     await collection.updateOne({id:req.body.id},{$set:req.body});
+   // const findResult = await collection.find({}).toArray();
+   client.close();
+
+   res.send('done')
+})
+
+
+todos.delete('/', async function (req, res){
+   const collection = await connect();   
+                     await collection.deleteOne(req.query);
+   // const findResult = await collection.find({}).toArray();
+   client.close();
+
+   res.send('done')
 })
 
 module.exports = todos;
