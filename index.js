@@ -4,7 +4,6 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const todos = require('./db/api/todos');
 const news = require('./db/api/news');
-require("dotenv").config();
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
