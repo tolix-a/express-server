@@ -1,9 +1,11 @@
 const express = require('express');
 const todos = express.Router();
 const { MongoClient } = require('mongodb');
+require("dotenv").config();
 
 const dbName = 'todos';
-const url = 'mongodb+srv://bluii0157:rhfkslfjqj@cluster0.lx7ow.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0';
+const URL_KEY = process.env.TODOS_URL;
+const url = URL_KEY;
 const client = new MongoClient(url);
 
 let collection;
