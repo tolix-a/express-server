@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const todos = require('./db/api/todos');
 const news = require('./db/api/news');
+const chartData = require('./db/api/account');
 
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -11,6 +12,7 @@ app.use(bodyParser.json());
 
 app.use('/todos', todos);
 app.use('/news', news);
+app.use('/chartData', chartData);
 
 app.listen(4000)
 
