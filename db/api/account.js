@@ -29,7 +29,7 @@ router.post('/', async function (req,res){
 
 router.delete('/:id', async function (req, res) {
   const {id} = req.params;
-  await collection.deleteOne({id: id});
+  await collection.deleteOne({id: Number(id)});
   res.json({ message: '삭제 완료' });
 })
 
