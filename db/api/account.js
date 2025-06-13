@@ -1,8 +1,7 @@
 const express = require('express');
-const chartData = express.Router();
+const router = express.Router();
 const { MongoClient } = require('mongodb');
 require("dotenv").config();
-// const axios = require('axios');
 
 const dbName = 'chartData';
 const URL_KEY = process.env.TODOS_URL;
@@ -17,17 +16,21 @@ async function connect(){
   return;
 }
 
-chartData.get('/', async function (req,res){
+router.get('/', async function (req,res){
   await connect();
   const findMoney = await collection.find({}).toArray();
-  // res.send("jmhjhj");
   res.send(findMoney);
 })
 
-chartData.post('/', async function (req,res){
+router.post('/', async function (req,res){
   await collection.insertOne(req.body);
   res.send("done");
 })
 
+router.delete('/:id', async function (req, res) {
+  await collection.findByIdAndDelete(req.params.id);
+  res.json({ message: '삭제 완료' });
+})
 
-module.exports = chartData;
+
+module.exports = router;
