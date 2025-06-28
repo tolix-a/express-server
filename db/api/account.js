@@ -23,8 +23,11 @@ router.get('/', async function (req,res){
 })
 
 router.post('/', async function (req,res){
-  await collection.insertOne(req.body);
-  res.send("done");
+  const result = await collection.insertOne(req.body);
+  res.json({
+    ...req.body,
+    _id: result.insertedId
+  });
 })
 
 router.delete('/:id', async function (req, res) {
